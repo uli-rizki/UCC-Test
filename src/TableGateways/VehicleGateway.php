@@ -10,13 +10,23 @@ class VehicleGateway {
     $this->db = $db;
   }
 
-  public function findAll()
+  public function findAll(Array $arg)
   {
+    $filter = "";
+
+    if (isset($arg['sort_by'])) {
+      $sort = $arg['sort_by'];
+      $filter = "ORDER BY $sort DESC";
+    }
+    if (isset($arg['sort_by']) && $arg['sort_by']=="engine_displacement") $filter = "ORDER BY engine_displacement_cc DESC";
+
     $statement = "
       SELECT
         *
       FROM
-        vehicles;
+        vehicles
+      
+      $filter
     ";
 
     try {

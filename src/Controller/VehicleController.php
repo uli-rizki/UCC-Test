@@ -8,14 +8,16 @@ class VehicleController {
     private $db;
     private $requestMethod;
     private $userId;
+    private $requestParam;
 
     private $VehicleGateway;
 
-    public function __construct($db, $requestMethod, $userId)
+    public function __construct($db, $requestMethod, $userId, $requestParam)
     {
         $this->db = $db;
         $this->requestMethod = $requestMethod;
         $this->userId = $userId;
+        $this->requestParam = $requestParam;
 
         $this->VehicleGateway = new VehicleGateway($db);
     }
@@ -54,7 +56,13 @@ class VehicleController {
 
     private function getAllVehicles()
     {
-        $result = $this->VehicleGateway->findAll();
+        $arg = array();
+        if (isset($this->requestParam)) {
+            // echo $this->requestParam; exit;
+            $arg = $this->queryParams($this->requestParam);
+        }
+
+        $result = $this->VehicleGateway->findAll($arg);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;
@@ -76,6 +84,16 @@ class VehicleController {
         $input = (array) json_decode(file_get_contents('php://input'), TRUE);
         if (! $this->validateVehicle($input)) {
             return $this->unprocessableEntityResponse();
+        }
+
+        if ($input['format_units'] == "L") {
+            $input['engine_displacement_cc'] = $input['engine_displacement']*1000;
+            $input['engine_displacement_liter'] = $input['engine_displacement'];
+        }
+
+        if ($input['format_units'] == "cc") {
+            $input['engine_displacement_cc'] = $input['engine_displacement'];
+            $input['engine_displacement_liter'] = $input['engine_displacement']/1000;
         }
 
         $this->VehicleGateway->insert($input);
@@ -140,6 +158,19 @@ class VehicleController {
           return false;
         }
         return true;
+    }
+
+    private function queryParams($param)
+    {
+        $result = array();
+        $pairs = explode("&", $param);
+        foreach($pairs as $pair) {
+            $keyVal = explode('=', $pair);
+            //array_push($result, array($keyVal[0] => $keyVal[1]));
+            $result[$keyVal[0]] = $keyVal[1];
+        }
+
+        return $result;
     }
 
     private function unprocessableEntityResponse()

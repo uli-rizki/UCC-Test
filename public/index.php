@@ -25,7 +25,7 @@ if (isset($uri[2])) {
 }
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
-
+$requestParam = $_SERVER["QUERY_STRING"];
 // pass the request method and user ID to the VehicleController and process the HTTP request:
-$controller = new VehicleController($dbConnection, $requestMethod, $userId);
+$controller = new VehicleController($dbConnection, $requestMethod, $userId, $requestParam);
 $controller->processRequest();
