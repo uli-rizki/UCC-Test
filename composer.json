@@ -1,0 +1,24 @@
+{
+    "name": "9pine/fullstack-test",
+    "description": "",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "vlucas/phpdotenv": "^2.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
