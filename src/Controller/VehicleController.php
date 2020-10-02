@@ -35,9 +35,6 @@ class VehicleController {
             case 'POST':
                 $response = $this->createVehicleFromRequest();
                 break;
-            case 'POST':
-                $response = $this->createUserFromRequest();
-                break;
             case 'PUT':
                 $response = $this->updateVehicleFromRequest($this->userId);
                 break;
@@ -82,6 +79,8 @@ class VehicleController {
     private function createVehicleFromRequest()
     {
         $input = (array) json_decode(file_get_contents('php://input'), TRUE);
+        $input = $input['vehicle'];
+
         if (! $this->validateVehicle($input)) {
             return $this->unprocessableEntityResponse();
         }
@@ -89,11 +88,19 @@ class VehicleController {
         if ($input['format_units'] == "L") {
             $input['engine_displacement_cc'] = $input['engine_displacement']*1000;
             $input['engine_displacement_liter'] = $input['engine_displacement'];
+            $input['engine_displacement_inc'] = $input['engine_displacement']*61024;
         }
 
         if ($input['format_units'] == "cc") {
             $input['engine_displacement_cc'] = $input['engine_displacement'];
-            $input['engine_displacement_liter'] = $input['engine_displacement']/1000;
+            $input['engine_displacement_liter'] = round($input['engine_displacement']/1000, 4);
+            $input['engine_displacement_inc'] = $input['engine_displacement']*0.061024;
+        }
+
+        if ($input['format_units'] == "in") {
+            $input['engine_displacement_inc'] = $input['engine_displacement'];
+            $input['engine_displacement_cc'] = $input['engine_displacement']/0.061024;
+            $input['engine_displacement_liter'] = round($input['engine_displacement']/61024, 4);
         }
 
         $this->VehicleGateway->insert($input);
@@ -112,6 +119,25 @@ class VehicleController {
         if (! $this->validateVehicle($input)) {
             return $this->unprocessableEntityResponse();
         }
+
+        if ($input['format_units'] == "L") {
+            $input['engine_displacement_cc'] = $input['engine_displacement']*1000;
+            $input['engine_displacement_liter'] = $input['engine_displacement'];
+            $input['engine_displacement_inc'] = $input['engine_displacement']*61024;
+        }
+
+        if ($input['format_units'] == "cc") {
+            $input['engine_displacement_cc'] = $input['engine_displacement'];
+            $input['engine_displacement_liter'] = $input['engine_displacement']/1000;
+            $input['engine_displacement_inc'] = $input['engine_displacement']*0.061024;
+        }
+
+        if ($input['format_units'] == "in") {
+            $input['engine_displacement_inc'] = $input['engine_displacement'];
+            $input['engine_displacement_cc'] = $input['engine_displacement']/0.061024;
+            $input['engine_displacement_liter'] = $input['engine_displacement']/61024;
+        }
+
         $this->VehicleGateway->update($id, $input);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = null;
@@ -142,12 +168,9 @@ class VehicleController {
         if (! isset($input['category'])) {
           return false;
         }
-        // if (! isset($input['engine_displacement_cc'])) {
-        //   return false;
-        // }
-        // if (! isset($input['engine_displacement_liter'])) {
-        //   return false;
-        // }
+        if (! isset($input['engine_displacement'])) {
+          return false;
+        }
         if (! isset($input['engine_power'])) {
           return false;
         }

@@ -62,9 +62,9 @@ class VehicleGateway {
     {
       $statement = "
         INSERT INTO vehicles 
-          (vehicle_no, vehicle_name, category, engine_displacement_cc, engine_displacement_liter, engine_power, price, location)
+          (vehicle_no, vehicle_name, category, engine_displacement_cc, engine_displacement_liter, engine_displacement_inc, engine_power, price, currency, location)
         VALUES
-          (:vehicle_no, :vehicle_name, :category, :engine_displacement_cc, :engine_displacement_liter, :engine_power, :price, :location);
+          (:vehicle_no, :vehicle_name, :category, :engine_displacement_cc, :engine_displacement_liter, :engine_displacement_inc, :engine_power, :price, :currency, :location);
       ";
 
       try {
@@ -75,8 +75,10 @@ class VehicleGateway {
             'category' => $input['category'],
             'engine_displacement_cc' => $input['engine_displacement_cc'],
             'engine_displacement_liter' => $input['engine_displacement_liter'],
+            'engine_displacement_inc' => $input['engine_displacement_inc'],
             'engine_power'  => $input['engine_power'],
             'price'  => $input['price'],
+            'currency'  => $input['currency'],
             'location'  => $input['location'],
         ));
         return $statement->rowCount();
@@ -97,6 +99,7 @@ class VehicleGateway {
           engine_displacement_liter = :engine_displacement_liter,
           engine_power = :engine_power,
           price = :price,
+          currency = :currency,
           location = :location
         WHERE vehicle_id = :vehicle_id;
     ";
@@ -110,8 +113,10 @@ class VehicleGateway {
           'category' => $input['category'],
           'engine_displacement_cc' => $input['engine_displacement_cc'],
           'engine_displacement_liter' => $input['engine_displacement_liter'],
+          'engine_displacement_inc' => $input['engine_displacement_inc'],
           'engine_power' => $input['engine_power'],
           'price' => $input['price'],
+          'currency' => $input['currency'],
           'location' => $input['location'],
         ));
         return $statement->rowCount();
