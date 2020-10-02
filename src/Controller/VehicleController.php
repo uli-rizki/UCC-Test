@@ -35,12 +35,12 @@ class VehicleController {
             case 'POST':
                 $response = $this->createVehicleFromRequest();
                 break;
-            case 'PUT':
-                $response = $this->updateVehicleFromRequest($this->userId);
-                break;
-            case 'DELETE':
-                $response = $this->deleteVehicle($this->userId);
-                break;
+            // case 'PUT':
+            //     $response = $this->updateVehicleFromRequest($this->userId);
+            //     break;
+            // case 'DELETE':
+            //     $response = $this->deleteVehicle($this->userId);
+            //     break;
             default:
                 $response = $this->notFoundResponse();
                 break;
